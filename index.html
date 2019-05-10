@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Playlist Curator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo center">MIX PIX</a>
+            </div>
+        </nav>
+        <ul id="slide-out" class="sidenav">
+            <li>
+                <div class="user-view">
+                    <a href="#name"><span class="white-text name">John Doe</span></a>
+                    <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
+                </div>
+            </li>
+            <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+            <li><a href="#!">Second Link</a></li>
+            <li>
+                <div class="divider"></div>
+            </li>
+            <li><a class="subheader">Subheader</a></li>
+            <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+        </ul>
+        <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    </header>
+
+    <br>
+    <br>
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Add a Music Sub-Reddit</span>
+                            <div class="input-field">
+                                <input id="newSub" type="text" class="validate">
+                                <label>Sub-Reddit Name</label>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s9">
+                                    <select id="timeframe">
+                                        <option value="past month">past month</option>
+                                        <option value="past year">past year</option>
+                                        <option value="all time">all time</option>
+                                    </select>
+                                    <label>Timeframe</label>
+                                </div>
+                                <div class="col s3">
+                                    <a class="btn-floating btn-large waves-effect waves-light red" id="btnAdd"><i
+                                            class="material-icons">add</i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Now Select Sub-Reddits For Your Playlist</span>
+                            <form action="#" id="checkboxSub">
+
+                            </form>
+                            <br>
+                            <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s9">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Your Playlist!</span>
+                            <div class="video-container" id="video">
+            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row">
+                <p>Any shoutouts we need to make go here</p>
+                <div class="footer-copyright">
+                    <div class="container">
+                        © 2014 Copyright Text
+                        <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+                    </div>
+                </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="assets/app.js"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</body>
+
+</html>
