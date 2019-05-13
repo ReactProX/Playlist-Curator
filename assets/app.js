@@ -155,13 +155,22 @@ function find_artist_title(search_terms) {
   RESPONSE: OBJECT
             EXAMPLE: {artist: "Marty Robbins", name: "El Paso (1959)"}
   */
-  var chunk = "i_k"; // This is meant to foil someone trying to steal my key
-  var my_search = "http://ws.audioscrobbler.com/2.0/?method=track.search&track=" + search_terms + "&ap" + chunk + "ey=e17316" + my_insert + "1938a2303a8f6e&format=json";
-  var msg = $.ajax({ type: "GET", url: my_search, async: false }).responseText;
-  var msg_json = JSON.parse(msg);
-  var artist = msg_json.results.trackmatches.track[0].artist
-  var song_name = msg_json.results.trackmatches.track[0].name
-  return { "artist": artist, "name": song_name }
+  try{
+    var chunk = "i_k"; // This is meant to foil someone trying to steal my key
+    var my_search = "http://ws.audioscrobbler.com/2.0/?method=track.search&track=" + search_terms + "&ap" + chunk + "ey=e17316" + my_insert + "1938a2303a8f6e&format=json";
+    var msg = $.ajax({ type: "GET", url: my_search, async: false }).responseText;
+    var msg_json = JSON.parse(msg);
+    var artist = msg_json.results.trackmatches.track[0].artist
+    var song_name = msg_json.results.trackmatches.track[0].name
+    return { "artist": artist, "song_name": song_name }
+  }
+    catch(error) {
+      console.error(error);
+      // expected output: ReferenceError: nonExistentFunction is not defined
+      // Note - error messages will vary depending on browser
+      return { "artist": '', "song_name": '' }
+    }
+
 }
 
 
@@ -171,5 +180,5 @@ function find_artist_title(search_terms) {
 // console.log(VideoIDs);
 
 // UNIT TEST
-// response = find_artist_title("Marty Robbins - El Paso (1959)");
-// console.log(response);
+response = find_artist_title("Marty Robbins - El Paso (1959)");
+console.log(response);
