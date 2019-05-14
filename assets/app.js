@@ -58,12 +58,33 @@ $("#search").on("click", function () {
     {
       var ms = $(this).attr('musicSub').val();
       var tf = $(this).attr('timeframe').val();
+      list_of_subs.push((ms, tf));
     }
-    list_of_subs.push((ms, tf));
   });
 
-  response = reddit_call(list_of_subs);
-  console.log(response);
+  // ASSEMBLY LINE STARTS HERE
+
+  var jams = reddit_call(list_of_subs);
+
+
+  // GATHER SEARCH TERMS FROM THE NAMES IN LIST_OF_SUBS
+  // find_artist_title(search_terms);
+  // // at this point, artist and title are now written into the jams object
+
+  // // Catch broken tubes and reject them
+  // catchnkill(jams);
+
+  // // find BPMs
+  //get_bpms(jams);
+
+  // // create youtube playlist
+  // playlist = create_playlist(jams);
+
+  // 
+
+  // embed 
+
+
 
 
   // ORDER MUST BE PRESERVED
@@ -96,7 +117,7 @@ var reddit_call = function (sub, time) {
 
   INPUTS:
           EXAMPLES:
-              "50sMusic","all"   <<<<<========== PASS IN SOMETHING LIKE THIS IN
+              "50sMusic","all"   <<<<<========== PASS IN SOMETHING LIKE THIS
               "guitar","month"
               "dubstep","week"                   GET SOMETHING LIKE THIS BACK
                                                ||
@@ -162,6 +183,7 @@ function find_artist_title(search_terms) {
     var msg_json = JSON.parse(msg);
     var artist = msg_json.results.trackmatches.track[0].artist
     var song_name = msg_json.results.trackmatches.track[0].name
+    console.log(msg_json.results.trackmatches)
     return { "artist": artist, "song_name": song_name }
   }
     catch(error) {
