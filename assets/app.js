@@ -65,10 +65,9 @@ $("#search").on("click", function () {
   // ASSEMBLY LINE STARTS HERE
 
   var jams = reddit_call(list_of_subs);
+  console.log(list_of_subs); // <<< --- find search terms in this guy
 
-
-  // GATHER SEARCH TERMS FROM THE NAMES IN LIST_OF_SUBS
-  // find_artist_title(search_terms);
+  // find_artist_title(search_terms);  // <<< - put search terms into here
   // // at this point, artist and title are now written into the jams object
 
   // // Catch broken tubes and reject them
