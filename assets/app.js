@@ -62,39 +62,11 @@ $("#search").on("click", function () {
     }
   });
 
-  // ASSEMBLY LINE STARTS HERE
+  // ASSEMBLY LINE IS DEPRICATED
 
-  var jams = reddit_call(list_of_subs);
-  console.log(list_of_subs); // <<< --- find search terms in this guy
-
-  // find_artist_title(search_terms);  // <<< - put search terms into here
-  // // at this point, artist and title are now written into the jams object
-
-  // // Catch broken tubes and reject them
-  // catchnkill(jams);
-
-  // // find BPMs
-  //get_bpms(jams);
-
-  // // create youtube playlist
-  // playlist = create_playlist(jams);
-
-  // 
-
-  // embed 
-
-
-
-
-  // ORDER MUST BE PRESERVED
-  // INVOKE matts function for calling Reddit API
-  // INVOKE Nicks function using matts Reddit response - STORE RESULTS
-  // INVOKE the GET_BPM fxn
-  // COMBINE ELEMENTS INTO MAIN WEBSITE
-
-  // PUT his reponse to use
-
-  // Call NICKS function with new data
+  // This function is the beginning of the callback chain.
+  reddit_call(list_of_subs);
+ 
 
 });
 
@@ -138,6 +110,7 @@ var reddit_call = function (sub, time) {
   var all_jams = {};
 
   reddit.top(sub).t(time).limit(500).fetch(function (res) {
+    // console.log(res);
     kids = res.data.children;
     for (var i = 0; i < kids.length && i < 10; i++) {
       if (validateYouTubeUrl(kids[i].data.url)) {
@@ -147,9 +120,9 @@ var reddit_call = function (sub, time) {
           'url': kids[i].data.url
         }
         all_jams[key] = new_item;
-
       };
     }
+    find_artist_title(all_jams);
   });
   return all_jams;
 }
@@ -167,39 +140,44 @@ function validateYouTubeUrl(url) {
 }
 
 
-function find_artist_title(search_terms) {
-  /*
-  INPUT: STRING
-         EXAMPLE: "Marty Robbins - El Paso (1959)"
+function find_artist_title(all_jams) {
 
-  RESPONSE: OBJECT
-            EXAMPLE: {artist: "Marty Robbins", name: "El Paso (1959)"}
+  /*
+    attaches ARTIST and SONG_NAME to the object and invokes the get_bpm method
   */
-  try{
-    var chunk = "i_k"; // This is meant to foil someone trying to steal my key
-    var my_search = "http://ws.audioscrobbler.com/2.0/?method=track.search&track=" + search_terms + "&ap" + chunk + "ey=e17316" + my_insert + "1938a2303a8f6e&format=json";
-    var msg = $.ajax({ type: "GET", url: my_search, async: false }).responseText;
-    var msg_json = JSON.parse(msg);
-    var artist = msg_json.results.trackmatches.track[0].artist
-    var song_name = msg_json.results.trackmatches.track[0].name
-    console.log(msg_json.results.trackmatches)
-    return { "artist": artist, "song_name": song_name }
-  }
-    catch(error) {
-      console.error(error);
-      // expected output: ReferenceError: nonExistentFunction is not defined
-      // Note - error messages will vary depending on browser
-      return { "artist": '', "song_name": '' }
+  var all_keys = Object.keys(all_jams)
+
+  // check if the property/key is defined in the object itself, not in parent
+  for (key of all_keys) {
+    search_terms = all_jams[key].title;
+
+    var artist = ''
+    var song_name = ''
+    try {
+      var chunk = "i_k"; // This is meant to foil someone trying to steal my key
+      var my_search = "http://ws.audioscrobbler.com/2.0/?method=track.search&track=" + search_terms + "&ap" + chunk + "ey=e17316" + my_insert + "1938a2303a8f6e&format=json";
+      var msg = $.ajax({ type: "GET", url: my_search, async: false }).responseText;
+      var msg_json = JSON.parse(msg);
+      artist = msg_json.results.trackmatches.track[0].artist
+      song_name = msg_json.results.trackmatches.track[0].name
     }
+    catch (error) {
+      console.error(error);
+    }
+    all_jams[key].artist = artist
+    all_jams[key].song_name = song_name
+  }
+  console.log(all_jams);
+
+  get_bpm(all_jams);
 
 }
 
+function get_bpm(){
+  // Gavin
+}
 
 
-// UNIT TEST
+// // UNIT TEST
 // VideoIDs = reddit_call("50sMusic", "all");
-// console.log(VideoIDs);
 
-// UNIT TEST
-response = find_artist_title("Marty Robbins - El Paso (1959)");
-console.log(response);
