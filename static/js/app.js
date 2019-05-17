@@ -53,12 +53,14 @@ $("#search").on("click", function () {
   // FOR each entry in #checkboxSub
   var list_of_subs = [];
   $(".musicSub").each(function (i) {
-    console.log(i);
-    if ($(this).prop('checked') == true);
-    {
-      var ms = $(this).attr('musicSub').val();
-      var tf = $(this).attr('timeframe').val();
-      list_of_subs.push((ms, tf));
+    // console.log($(this).prop('checked'))
+    // console.log(this)
+    if ($(this).prop('checked')) {
+
+      var ms = $(this).attr('musicSub');
+      var tf = $(this).attr('timeframe');
+      list_of_subs.push([ms, tf]);
+      //console.log(list_of_subs);
     }
   });
 
@@ -66,22 +68,19 @@ $("#search").on("click", function () {
 
   // This function is the beginning of the callback chain.
   reddit_call(list_of_subs);
- 
+
 
 });
 
 //interactive element functionality
 $(document).ready(function () {
   $('select').formSelect();
-});
-
-$(document).ready(function () {
-  $('.sidenav').sidenav();
+  $('.dropdown-trigger').dropdown();
 });
 
 
 
-var reddit_call = function (sub, time) {
+var reddit_call = function (list_of_subs) {
   /*
   DESCRIPTION:
     Convert subreddit + timeframe to a list of useable youtube video IDs
@@ -109,22 +108,31 @@ var reddit_call = function (sub, time) {
 
   var all_jams = {};
 
-  reddit.top(sub).t(time).limit(500).fetch(function (res) {
-    // console.log(res);
-    kids = res.data.children;
-    for (var i = 0; i < kids.length && i < 10; i++) {
-      if (validateYouTubeUrl(kids[i].data.url)) {
-        var key = validateYouTubeUrl(kids[i].data.url);
-        var new_item = {
-          'title': kids[i].data.title,
-          'url': kids[i].data.url
-        }
-        all_jams[key] = new_item;
-      };
-    }
-    find_artist_title(all_jams);
-  });
-  return all_jams;
+
+  for (var il = 0, size = list_of_subs.length; il < size; il++) {
+    sub = list_of_subs[il][0]
+    time = list_of_subs[il][1]
+    // console.log(sub, time)
+    reddit.top(sub).t(time).limit(100).fetch(function (res) {
+      // console.log(res);
+      kids = res.data.children;
+      for (var i = 0; i < kids.length && i < 10; i++) {
+
+        if (validateYouTubeUrl(kids[i].data.url)) {
+          var key = validateYouTubeUrl(kids[i].data.url);
+          var new_item = {
+            'title': kids[i].data.title,
+            'url': kids[i].data.url
+          }
+          all_jams[key] = new_item;
+        };
+      }
+      if (il >= size - 1) {
+        find_artist_title(all_jams);
+      }
+    });
+  }
+
 }
 
 // SEPARATE FXN FOR VALIDATIONG YOUTUBE LINKS
@@ -142,10 +150,12 @@ function validateYouTubeUrl(url) {
 
 function find_artist_title(all_jams) {
 
+
   /*
     attaches ARTIST and SONG_NAME to the object and invokes the get_bpm method
   */
   var all_keys = Object.keys(all_jams)
+  // console.log(all_jams)
 
   // check if the property/key is defined in the object itself, not in parent
   for (key of all_keys) {
@@ -162,22 +172,60 @@ function find_artist_title(all_jams) {
       song_name = msg_json.results.trackmatches.track[0].name
     }
     catch (error) {
-      console.error(error);
+      var artist = ''
+      var song_name = ''
     }
-    all_jams[key].artist = artist
-    all_jams[key].song_name = song_name
+    all_jams[key].artist = artist;
+    all_jams[key].song_name = song_name;
   }
-  console.log(all_jams);
+  bpm_call(all_jams);
+} // end find_artist_title
 
-  get_bpm(all_jams);
-
+var bpm_call_converter = function (str) {
+  console.log("str is", str);
+  //Description: reformats from jams object into readable search terms for bpm_call
+  var convertedString = str.replace(/ /g, "+").toLowerCase();
+  return convertedString;
 }
 
-function get_bpm(){
-  // Gavin
+var bpm_call = function (jams) {
+  // console.log(jams);
+  // Description: given song_name and artist,make a call for the bpm of the song and add it into the object
+
+  // Inputs: all_jams object
+
+  // Outputs: all_jams object with a bpm value added to each jam
+  var values = Object.values(jams);
+  var keys = Object.keys(jams);
+  console.log("$$$$ ", values, keys)
+  var dropdown = $("<ul>");
+  dropdown.addClass('dropdown-content');
+  dropdown.attr('id', 'dropdown1');
+  var ddTrigger = "<li><a class='dropdown-trigger btn' href='#' data-target='dropdown1'>" + "plName" + "</a></li>"
+  $.each(jams, function (i, item) {
+    console.log("item:", item);
+    var query = "https://cors-anywhere.herokuapp.com/https://api.getsongbpm.com/search/?api_key=2a441a2819558dd13072a3f2fd42d9d8&type=both&lookup=song:" + bpm_call_converter(item.song_name) + "artist:" + bpm_call_converter(item.artist);
+    $.getJSON(query, (function (res) {
+      // console.log(res);     //<<---- okay so what's happening is this... 
+      var song = res.search[0];
+      jams[i].bpm = song.tempo; // so here song.tempo has a value    ---    let me think.. so if you access this right here, then you should have access. But as soon as you leave this getJSON scope, then it is no
+      // console.log(jams);    //<<---- Console.log is lying to you. I can prove it
+      // console.log(Object.keys(jams));  //<---- this will come back empty because it IS empty at the time we go through this. It's just a promise.
+      dropdown.append('<li><a href="#!">' + jams[i].song_name + " " + jams[i].artist + " " + "bpm: " + song.tempo + '</a></li>')
+    }));
+  });
+  $("#playlist-area").append(ddTrigger);
+  $("#playlist-area").append(dropdown);
 }
 
 
+// UNIT TEST
+var testJams = {
+  key1: { song_name: "Enter Sandman", artist: "Metallica", url: "https://www.youtube.com/watch?v=-zBzZJd-nfw&amp;index=12&amp;list=PLoFQzfvcvGcVHBAv0PkN17iLA_n0aQNme", },
+  key2: { song_name: "Call Me Maybe", artist: "Carly Rae Jepsen", url: "https://www.youtube.com/watch?v=FyM8NVl4yBY&amp;app=desktop&amp;persist_app=1", }
+}
+
+// bpm_call(testJams);
 // // UNIT TEST
 // VideoIDs = reddit_call("50sMusic", "all");
 
