@@ -198,8 +198,13 @@ var bpm_call = function (jams) {
   var values = Object.values(jams);
   var keys = Object.keys(jams);
   console.log("$$$$ ", values, keys)
-  var dropdown = $("<ul>");
-  dropdown.addClass('dropdown-content');
+  var dropdown = $("<li>");
+  var playlistTitle = $("<div>");
+  var songInfo = $("<div>");
+  playlistTitle.addClass('collapsible-header');
+  playlistTitle.text("Playlist");
+  songInfo.addClass("collapsible-body");
+  dropdown.addClass('collapsible');
   dropdown.attr('id', 'dropdown1');
   var ddTrigger = "<li><a class='dropdown-trigger btn' href='#' data-target='dropdown1'>" + "plName" + "</a></li>"
   $.each(jams, function (i, item) {
